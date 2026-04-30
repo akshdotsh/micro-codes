@@ -1,6 +1,7 @@
 export const algorithmsData = [
 
   {
+    id: 1,
     name: "Count the Number of 1's in a Number",
     code: `; Count the Number of 1's in a Number
 LDA 8500H
@@ -17,6 +18,7 @@ RST 5`
   },
 
   {
+    id: 2,
     name: "Arrange Numbers in Ascending Order",
     code: `; Arrange Numbers in Ascending Order
 LXI H, 8500H
@@ -41,6 +43,7 @@ RST 5`
   },
 
   {
+    id: 3,
     name: "Sum of Series of Even Numbers",
     code: `; Sum of Series of Even Numbers
 LDA 8500H
@@ -61,6 +64,7 @@ RST 5`
   },
 
   {
+    id: 4,
     name: "Count Bytes Equal to AD (10101101)",
     code: `; Count Bytes Equal to AD (10101101)
 MVI B, 0A
@@ -80,6 +84,7 @@ RST 5`
   },
 
   {
+    id: 5,
     name: "Count Numbers with Even Parity",
     code: `; Count Numbers with Even Parity
 MVI B, 0A
@@ -98,6 +103,7 @@ RST 5`
   },
 
   {
+    id: 6,
     name: "Convert BCD to Binary",
     code: `; Convert BCD to Binary
 LDA 8500H
@@ -122,6 +128,7 @@ RST 5`
   },
 
   {
+    id: 7,
     name: "Exchange Contents of Memory Locations",
     code: `; Exchange Contents of Memory Locations
 LDA 8500H
@@ -134,6 +141,7 @@ RST 5`
   },
 
   {
+    id: 8,
     name: "Find the Largest Number in an Array of 10 Elements",
     code: `; Find the Largest Number in an Array of 10 Elements
 MVI B, 09
