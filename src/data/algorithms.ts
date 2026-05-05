@@ -2,160 +2,144 @@ export const algorithmsData = [
 
   {
     id: 1,
-    name: "Count the Number of 1's in a Number",
-    code: `; Count the Number of 1's in a Number
-LDA 8500H
-MVI B, 08
-MVI D, 00
-Loop1: RLC
-JNC Loop2
-INR D
-Loop2: DCR B
-JNZ Loop1
-MOV A, D
-STA 8600H
-RST 5`
+    name: "Steepest Descent Method",
+    code: `clc
+clear all
+
+f = @(x1,x2) (x1.^2 + 2*x2.^2);
+grad_f = @(x1,x2) [2*x1; 4*x2];
+x = [3;3];
+max_itr = 100;
+tol = 1e-6;
+alpha = 0.1;
+
+fprintf('\\n Initial point : (%f,%f)', x(1), x(2))
+
+for i = 1:max_itr
+    gradient = grad_f(x(1), x(2));
+    if norm(gradient) < tol
+        fprintf('\\n Converged after %d iterations', i-1)
+        break;
+    end
+    x = x - alpha * gradient;
+    fprintf('\\n Iteration %d : x=(%f,%f), f(x)=%f', i, x(1), x(2), f(x(1), x(2)))
+end
+
+fprintf('\\n Final solution : (%f,%f)', x(1), x(2))
+fprintf('\\n Minimum function value: %f\\n', f(x(1), x(2)))`
   },
 
   {
     id: 2,
-    name: "Arrange Numbers in Ascending Order",
-    code: `; Arrange Numbers in Ascending Order
-LXI H, 8500H
-MOV C, M
-DCR C
-Repeat: MOV D, C
-LXI H, 8501H
-Loop: MOV A, M
-INX H
-CMP M
-JC Skip
-MOV B, M
-MOV M, A
-DCX H
-MOV M, B
-INX H
-Skip: DCR D
-JNZ Loop
-DCR C
-JNZ Repeat
-RST 5`
+    name: "Simplex Method",
+    code: `clc
+clear
+
+C = [1 2 3 0 0];
+A = [1 2 0 1 0;
+     3 0 4 0 1];
+b = [20; 30];
+
+[m, n] = size(A);
+bv_index = n-m+1:n;
+Y = [A b];
+
+for iter = 1:50
+    Cb = C(bv_index);
+    Xb = Y(:,end);
+    Z = Cb'*Xb;
+    ZjCj = Cb'*Y(:,1:n) - C;
+    Table = [ZjCj; Z; Y];
+
+    if all(ZjCj >= 0)
+        disp('Optimal solution found:')
+        disp(Xb)
+        disp(Z)
+        break
+    else
+        [~, EV] = min(ZjCj);
+        if all(Y(:,EV) <= 0)
+            disp('Unbounded solution')
+            break
+        else
+            ratio = inf(m,1);
+            for j = 1:m
+                if Y(j,EV) > 0
+                    ratio(j) = Xb(j) / Y(j,EV);
+                end
+            end
+            [~, LV] = min(ratio);
+            bv_index(LV) = EV;
+            pivot = Y(LV,EV);
+            Y(LV,:) = Y(LV,:) / pivot;
+            for i = 1:m
+                if i ~= LV
+                    Y(i,:) = Y(i,:) - Y(i,EV)*Y(LV,:);
+                end
+            end
+        end
+    end
+end`
   },
 
   {
     id: 3,
-    name: "Sum of Series of Even Numbers",
-    code: `; Sum of Series of Even Numbers
-LDA 8500H
-MOV C, A
-MVI B, 00
-LXI H, 8501H
-Back: MOV A, M
-ANI 01
-JNZ Skip
-MOV A, B
-ADD M
-MOV B, A
-Skip: INX H
-DCR C
-JNZ Back
-STA 8600H
-RST 5`
-  },
+    name: "Least Cost Method (LCM)",
+    code: `clc
+clear all
+format short
 
-  {
-    id: 4,
-    name: "Count Bytes Equal to AD (10101101)",
-    code: `; Count Bytes Equal to AD (10101101)
-MVI B, 0A
-MVI D, AD
-MVI C, 00
-LXI H, 8500H
-Back: MOV A, M
-CMP D
-JNZ Next
-INR C
-Next: INX H
-DCR B
-JNZ Back
-MOV A, C
-STA 8600H
-RST 5`
-  },
+Cost = [11 20 7 8; 21 16 10 12; 8 12 18 9];
+A = [50 40 70];
+B = [30 25 35 40];
 
-  {
-    id: 5,
-    name: "Count Numbers with Even Parity",
-    code: `; Count Numbers with Even Parity
-MVI B, 0A
-MVI C, 00
-LXI H, 8500H
-Back: MOV A, M
-ANI FF
-JPO Next
-INR C
-Next: INX H
-DCR B
-JNZ Back
-MOV A, C
-STA 8600H
-RST 5`
-  },
+if sum(A) == sum(B)
+    fprintf('Given Transportation Problem is Balanced \\n')
+else
+    fprintf('Given Transportation Problem is Unbalanced \\n')
+    if sum(A) < sum(B)
+        Cost(end+1,:) = zeros(1,size(B,2));
+        A(end+1) = sum(B) - sum(A);
+    elseif sum(B) < sum(A)
+        Cost(:,end+1) = zeros(1,size(A,2));
+        B(end+1) = sum(A) - sum(B);
+    end
+end
 
-  {
-    id: 6,
-    name: "Convert BCD to Binary",
-    code: `; Convert BCD to Binary
-LDA 8500H
-MOV B, A
-ANI 0F
-MOV C, A
-MOV A, B
-ANI F0
-RRC
-RRC
-RRC
-RRC
-MOV B, A
-XRA A
-MVI D, 0A
-Sum: ADD D
-DCR B
-JNZ Sum
-ADD C
-STA 8600H
-RST 5`
-  },
+ICost = Cost;
+X = zeros(size(Cost));
+[m,n] = size(Cost);
+BFS = m + n - 1;
 
-  {
-    id: 7,
-    name: "Exchange Contents of Memory Locations",
-    code: `; Exchange Contents of Memory Locations
-LDA 8500H
-MOV B, A
-LDA 8600H
-STA 8500H
-MOV A, B
-STA 8600H
-RST 5`
-  },
+for i = 1:size(Cost,1)
+    for j = 1:size(Cost,2)
+        hh = min(Cost(:));
+        [Row_index, Col_index] = find(hh == Cost);
+        x11 = min(A(Row_index), B(Col_index));
+        [~, index] = max(x11);
+        ii = Row_index(index);
+        jj = Col_index(index);
+        y11 = min(A(ii), B(jj));
+        X(ii,jj) = y11;
+        A(ii) = A(ii) - y11;
+        B(jj) = B(jj) - y11;
+        Cost(ii,jj) = Inf;
+    end
+end
 
-  {
-    id: 8,
-    name: "Find the Largest Number in an Array of 10 Elements",
-    code: `; Find the Largest Number in an Array of 10 Elements
-MVI B, 09
-LXI H, 8500H
-MOV A, M
-INX H
-Back: CMP M
-JNC Next
-MOV A, M
-Next: INX H
-DCR B
-JNZ Back
-STA 850AH
-RST 5`
+fprintf('Initial BFS =\\n')
+IBFS = array2table(X);
+disp(IBFS);
+
+TotalBFS = length(nonzeros(X));
+if TotalBFS == BFS
+    fprintf('Initial BFS is Non-Degenerate \\n')
+else
+    fprintf('Initial BFS is Degenerate \\n')
+end
+
+InitialCost = sum(sum(ICost .* X));
+fprintf('Initial BFS Cost is = %d \\n', InitialCost);`
   }
 
 ];
